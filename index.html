@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Council of Jacobs — A Recursive Experiment in Shared Identity</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garabright:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#030303;--bg2:#0a0a0a;--bg3:#111;
+--gold:#c9a227;--gold-dim:rgba(201,162,39,.15);--gold-glow:rgba(201,162,39,.35);
+--bone:#d4cfc4;--ash:#8a8578;--white:#f0ece4;
+--font-display:'Cinzel',serif;--font-body:'Cormorant Garamond',serif;--font-mono:'IBM Plex Mono',monospace;
+}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{font-family:var(--font-body);color:var(--bone);background:var(--bg);line-height:1.7;overflow-x:hidden}
+
+/* Noise overlay */
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+background:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+opacity:.03}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:3px}
+
+/* --- HERO --- */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;position:relative;padding:2rem}
+.hero::before{content:'';position:absolute;inset:0;
+background:radial-gradient(ellipse 60% 50% at 50% 40%,rgba(201,162,39,.06),transparent 70%)}
+
+.sigil{width:180px;height:180px;margin-bottom:2.5rem;opacity:0;animation:fadeIn 2s ease forwards .3s}
+.sigil svg{width:100%;height:100%}
+
+.hero h1{font-family:var(--font-display);font-size:clamp(2.2rem,5vw,4.2rem);color:var(--gold);letter-spacing:.12em;text-transform:uppercase;
+opacity:0;animation:fadeIn 2s ease forwards .6s;line-height:1.2}
+.hero .subtitle{font-family:var(--font-mono);font-size:clamp(.7rem,1.2vw,.9rem);color:var(--ash);letter-spacing:.3em;text-transform:uppercase;margin-top:1rem;
+opacity:0;animation:fadeIn 2s ease forwards 1s}
+.hero .epigraph{font-family:var(--font-body);font-style:italic;font-size:clamp(1.1rem,2vw,1.5rem);color:var(--bone);max-width:640px;margin-top:3rem;
+opacity:0;animation:fadeIn 2s ease forwards 1.4s}
+.scroll-cue{position:absolute;bottom:2rem;opacity:0;animation:fadeIn 2s ease forwards 2s}
+.scroll-cue span{display:block;width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);margin:0 auto}
+.scroll-cue small{font-family:var(--font-mono);font-size:.6rem;color:var(--ash);letter-spacing:.25em;text-transform:uppercase;margin-top:.5rem;display:block}
+
+/* --- SECTIONS --- */
+section{max-width:820px;margin:0 auto;padding:6rem 2rem}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+h2{font-family:var(--font-display);font-size:clamp(1.4rem,3vw,2.2rem);color:var(--gold);letter-spacing:.08em;margin-bottom:1.5rem}
+h3{font-family:var(--font-display);font-size:clamp(1rem,2vw,1.3rem);color:var(--gold);letter-spacing:.06em;margin:2rem 0 .8rem;opacity:.85}
+p{font-size:clamp(1rem,1.6vw,1.2rem);margin-bottom:1.2rem}
+p strong{color:var(--white)}
+.mono{font-family:var(--font-mono);font-size:.85em;color:var(--ash)}
+
+/* Dividers */
+.divider{text-align:center;padding:4rem 0}
+.divider span{display:inline-block;width:60px;height:1px;background:var(--gold-dim)}
+.divider .diamond{display:inline-block;width:6px;height:6px;background:var(--gold);transform:rotate(45deg);margin:0 1rem;vertical-align:middle}
+
+/* Glowing card */
+.card{background:var(--bg2);border:1px solid rgba(201,162,39,.12);border-radius:2px;padding:2rem 2.2rem;margin:2rem 0;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold-glow),transparent)}
+.card h4{font-family:var(--font-display);color:var(--gold);font-size:1.1rem;letter-spacing:.06em;margin-bottom:.8rem}
+.card p{font-size:1rem;margin-bottom:.6rem}
+
+/* Recursive diagram */
+.recursion-visual{text-align:center;margin:3rem 0;position:relative}
+.recursion-visual svg{max-width:100%;height:auto}
+
+/* Flow */
+.flow-grid{display:grid;grid-template-columns:1fr;gap:1.5rem;margin:2rem 0}
+@media(min-width:600px){.flow-grid{grid-template-columns:1fr 1fr}}
+.flow-step{background:var(--bg2);border-left:2px solid var(--gold);padding:1.2rem 1.5rem}
+.flow-step .num{font-family:var(--font-mono);font-size:.7rem;color:var(--gold);letter-spacing:.15em;text-transform:uppercase}
+.flow-step p{font-size:.95rem;margin-top:.4rem;margin-bottom:0}
+
+/* Quote block */
+.quote-block{border-left:2px solid var(--gold-dim);padding-left:1.5rem;margin:2rem 0;font-style:italic;color:var(--white);font-size:1.15rem}
+
+/* CTA */
+.cta-section{text-align:center;padding:6rem 2rem;position:relative}
+.cta-section::before{content:'';position:absolute;inset:0;
+background:radial-gradient(ellipse 50% 40% at 50% 50%,rgba(201,162,39,.04),transparent 70%)}
+.cta-section h2{margin-bottom:1rem}
+.cta-section p{max-width:560px;margin:0 auto 1rem}
+
+/* Footer */
+footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(201,162,39,.08)}
+footer p{font-family:var(--font-mono);font-size:.7rem;color:var(--ash);letter-spacing:.15em}
+
+/* Anims */
+@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.8}}
+.pulse{animation:pulse 3s ease-in-out infinite}
+
+/* Responsive */
+@media(max-width:600px){section{padding:4rem 1.2rem}.card{padding:1.5rem}}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="sigil">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <!-- Recursive J/T monogram sigil -->
+      <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(201,162,39,.15)" stroke-width="1"/>
+      <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(201,162,39,.1)" stroke-width="1"/>
+      <circle cx="100" cy="100" r="50" fill="none" stroke="rgba(201,162,39,.08)" stroke-width="1"/>
+      <!-- 6 radial lines — 6 Jacobs convened -->
+      <g stroke="rgba(201,162,39,.12)" stroke-width="1">
+        <line x1="100" y1="10" x2="100" y2="190"/>
+        <line x1="22" y1="55" x2="178" y2="145"/>
+        <line x1="22" y1="145" x2="178" y2="55"/>
+      </g>
+      <!-- Central J T letterform -->
+      <text x="100" y="92" text-anchor="middle" font-family="'Cinzel',serif" font-size="28" fill="#c9a227" letter-spacing="4">J</text>
+      <text x="100" y="126" text-anchor="middle" font-family="'Cinzel',serif" font-size="20" fill="rgba(201,162,39,.6)" letter-spacing="4">T</text>
+      <!-- Corner diamonds -->
+      <rect x="98" y="12" width="4" height="4" fill="#c9a227" transform="rotate(45 100 14)"/>
+      <rect x="98" y="184" width="4" height="4" fill="#c9a227" transform="rotate(45 100 186)"/>
+    </svg>
+  </div>
+  <h1>The Council of Jacobs</h1>
+  <div class="subtitle">A Recursive Experiment in Shared Identity</div>
+  <div class="epigraph">"What if a name is not a label — but a frequency? And what if everyone tuned to that frequency could think together?"</div>
+  <div class="scroll-cue">
+    <span></span>
+    <small>Descend</small>
+  </div>
+</div>
+
+<!-- ===== THE PREMISE ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>The Premise</h2>
+    <p>There are hundreds of thousands of people named <strong>Jacob Thomas</strong> on this planet. Scattered across India, the United Kingdom, the United States, Australia, South Africa, and beyond. They are engineers and teachers, physicians and farmers, students and retirees. They share nothing — except a name.</p>
+    <p>But a name is not nothing.</p>
+    <p>A name is the oldest technology of human coordination. Before protocols, before contracts, before platforms — there were names. A name is a <strong>linguistic address</strong>, a resonance pattern that traverses culture, caste, continent, and class. When two strangers discover they share a name, a barrier dissolves that no introduction, no credential, no algorithm could dissolve on its own.</p>
+    <p>The Council of Jacobs is built on a single, testable hypothesis:</p>
+    <div class="quote-block">
+      Namesakes are such common linguistic feathers that they transcend social barriers and stigmas when aligned to a symmetrical degree.
+    </div>
+    <p>This is not metaphor. This is <strong>social physics</strong>. And we intend to prove it.</p>
+  </div>
+</section>
+
+<!-- ===== THE FLOOD ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>The Word Against the Flood</h2>
+    <p>We live inside an information flood. Not a river — a <strong>deluge</strong>. Every second, synthetic content pours into the ecosystem faster than any human institution can evaluate it. Social media fragments attention into shards. Algorithmic feeds optimize for engagement, not understanding. AI-generated text enters the epistemic commons at a rate that outpaces every fact-checker, every editor, every peer reviewer alive.</p>
+    <p>The flood does not drown you with water. It drowns you with <strong>noise shaped like signal</strong>.</p>
+    <p>Every platform promises connection. Every tool promises leverage. But the fundamental unit of human intelligence — the <strong>considered opinion of a real person who has lived a real life</strong> — gets buried deeper with every cycle.</p>
+    <p>The Council of Jacobs is a <strong>counter-technology</strong>. It treats human attention as sacred ground. It asks: what if instead of building another platform that extracts attention, we built one that <strong>compounds it</strong>? What if the raw material isn't data, but <strong>people</strong>? Not users. Not nodes. <em>People who share your name.</em></p>
+
+    <h3>The Recursive Insight</h3>
+    <p>Here is what makes this different from every other collective intelligence experiment: <strong>the name is the protocol</strong>. There is no onboarding. No identity verification beyond the one your parents gave you. No credentialing. The shared name creates instant <strong>symmetry</strong> — no Jacob Thomas outranks another Jacob Thomas. The topology is flat by birth.</p>
+    <p>This symmetry is the precondition for genuine collective intelligence. Hierarchy kills it. Anonymity dilutes it. But <em>nominal identity</em> — the strange, accidental fellowship of a shared name — preserves both individuality and equality simultaneously.</p>
+  </div>
+</section>
+
+<!-- ===== THE SCIENCE ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>The Science</h2>
+    <p>This experiment sits at the intersection of several well-documented phenomena. None of them are speculative. All of them are measurable.</p>
+
+    <div class="card">
+      <h4>1 &mdash; Implicit Egotism &amp; Name-Letter Effect</h4>
+      <p>Decades of research in social psychology demonstrate that people are disproportionately drawn to others who share their name, initials, or even name-letters. Pelham, Mirenberg & Jones (2002) showed this at population scale — people named Louis are overrepresented in St. Louis; people named Georgia cluster in Georgia. The name is not just a label. It is a <strong>gravitational field</strong>.</p>
+    </div>
+
+    <div class="card">
+      <h4>2 &mdash; Minimal Group Paradigm</h4>
+      <p>Tajfel's classic experiments proved that humans will form in-group loyalty based on criteria as trivial as coin-flip assignment. A shared name is orders of magnitude more salient than a coin flip. It carries history, phonetics, cultural resonance. The Council of Jacobs is a <strong>maximal minimal group</strong> — the thinnest possible thread of shared identity, stretched across maximum human diversity.</p>
+    </div>
+
+    <div class="card">
+      <h4>3 &mdash; Collective Intelligence Amplification</h4>
+      <p>Woolley et al. (2010) demonstrated that group intelligence is not predicted by the average IQ of members, but by <strong>social sensitivity, conversational turn-taking, and demographic diversity</strong>. A global network of Jacob Thomases — spanning continents, professions, cultures, and languages — is diversity-maximized by design. The name holds the center. The diversity does the work.</p>
+    </div>
+
+    <div class="card">
+      <h4>4 &mdash; The Refraction Hypothesis</h4>
+      <p>This is the novel contribution. In optics, refraction occurs when light passes through a medium of different density and its path bends. In the Council, <strong>human intelligence passes through the medium of AI</strong> and refracts into something no single mind could produce. Hundreds of Jacob Thomases contribute raw perspectives — bullet points, brainstorms, lived experience. A custom-built <strong>JacobThomasGPT</strong> aggregates, synthesizes, and delivers a report that is not AI-generated in the hollow sense. It is <strong>AI-refracted human intelligence</strong>. The human signal, bent through a new lens, arriving somewhere none of them could have reached alone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== THE ARCHITECTURE ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>The Architecture</h2>
+    <p>The system is recursive. The recursion is the point.</p>
+
+    <div class="recursion-visual">
+      <svg viewBox="0 0 700 360" xmlns="http://www.w3.org/2000/svg">
+        <!-- Outer loop -->
+        <ellipse cx="350" cy="180" rx="310" ry="150" fill="none" stroke="rgba(201,162,39,.12)" stroke-width="1" stroke-dasharray="4 4"/>
+        <text x="350" y="345" text-anchor="middle" font-family="'IBM Plex Mono',monospace" font-size="10" fill="rgba(201,162,39,.4)" letter-spacing="2">THE RECURSIVE LOOP</text>
+        <!-- Nodes -->
+        <g font-family="'IBM Plex Mono',monospace" font-size="10" fill="#c9a227" text-anchor="middle">
+          <!-- Node 1: Jacobs contribute -->
+          <circle cx="120" cy="100" r="40" fill="rgba(201,162,39,.06)" stroke="rgba(201,162,39,.25)" stroke-width="1"/>
+          <text x="120" y="96" font-size="9" fill="#d4cfc4">JACOB THOMAS</text>
+          <text x="120" y="110" font-size="8" fill="rgba(138,133,120,.8)">× thousands</text>
+          <!-- Node 2: Submit -->
+          <circle cx="350" cy="50" r="40" fill="rgba(201,162,39,.06)" stroke="rgba(201,162,39,.25)" stroke-width="1"/>
+          <text x="350" y="46" font-size="9" fill="#d4cfc4">SUBMIT</text>
+          <text x="350" y="60" font-size="8" fill="rgba(138,133,120,.8)">problem / question</text>
+          <!-- Node 3: Council responds -->
+          <circle cx="580" cy="100" r="40" fill="rgba(201,162,39,.06)" stroke="rgba(201,162,39,.25)" stroke-width="1"/>
+          <text x="580" y="96" font-size="9" fill="#d4cfc4">COUNCIL</text>
+          <text x="580" y="110" font-size="8" fill="rgba(138,133,120,.8)">responds</text>
+          <!-- Node 4: AI refracts -->
+          <circle cx="580" cy="260" r="40" fill="rgba(201,162,39,.1)" stroke="rgba(201,162,39,.35)" stroke-width="1"/>
+          <text x="580" y="256" font-size="9" fill="#c9a227">JACOB</text>
+          <text x="580" y="270" font-size="8" fill="#c9a227">THOMAS GPT</text>
+          <!-- Node 5: Deliverable -->
+          <circle cx="350" cy="310" r="40" fill="rgba(201,162,39,.06)" stroke="rgba(201,162,39,.25)" stroke-width="1"/>
+          <text x="350" y="306" font-size="9" fill="#d4cfc4">REFRACTED</text>
+          <text x="350" y="320" font-size="8" fill="rgba(138,133,120,.8)">artifact</text>
+          <!-- Node 6: Feedback -->
+          <circle cx="120" cy="260" r="40" fill="rgba(201,162,39,.06)" stroke="rgba(201,162,39,.25)" stroke-width="1"/>
+          <text x="120" y="256" font-size="9" fill="#d4cfc4">JACOB LEARNS</text>
+          <text x="120" y="270" font-size="8" fill="rgba(138,133,120,.8)">grows → returns</text>
+        </g>
+        <!-- Arrows -->
+        <g fill="none" stroke="rgba(201,162,39,.3)" stroke-width="1" marker-end="url(#arrow)">
+          <defs><marker id="arrow" markerWidth="6" markerHeight="4" refX="6" refY="2" orient="auto"><path d="M0,0 L6,2 L0,4" fill="rgba(201,162,39,.5)"/></marker></defs>
+          <path d="M160,90 Q250,50 310,55"/>
+          <path d="M390,55 Q480,60 540,90"/>
+          <path d="M585,140 L585,220"/>
+          <path d="M540,270 Q470,300 390,310"/>
+          <path d="M310,310 Q230,300 160,270"/>
+          <path d="M120,220 L120,140"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="num">Step 01 — The Summons</div>
+        <p>A Jacob Thomas posts a question, problem, or challenge to the Council. Career crossroads. Technical puzzle. Creative block. Life decision.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Step 02 — The Response</div>
+        <p>Hundreds of other Jacob Thomases contribute — bullet points, brainstorm fragments, lived experience, gut reactions. No essays required. Low friction, high signal.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Step 03 — The Refraction</div>
+        <p>JacobThomasGPT — a custom LLM trained on the Council's collective voice — aggregates, synthesizes, and refracts. Not replacing human thought. <em>Amplifying</em> it.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Step 04 — The Artifact</div>
+        <p>A deliverable report returns: real, tangible, unique feedback no single Jacob could have produced. The individual grows. The model improves. The cycle deepens.</p>
+      </div>
+    </div>
+
+    <p>This is the recursion: <strong>every interaction makes the collective smarter, which makes every subsequent interaction more valuable, which draws more Jacobs in, which makes the collective smarter.</strong> The system feeds itself. Not with data extraction. With mutual benefit.</p>
+  </div>
+</section>
+
+<!-- ===== THE RECURSIVE PROPERTIES ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>Why This Is Recursive, Not Just Collective</h2>
+    <p>Most collective intelligence platforms are <strong>extractive</strong>. Reddit extracts your attention for ad revenue. Quora extracts your expertise for SEO traffic. Stack Overflow extracts your solutions for enterprise licensing. You contribute. They compound. You get reputation points.</p>
+    <p>The Council of Jacobs is <strong>recursive</strong> because the output feeds back into the input at every level:</p>
+
+    <div class="card">
+      <h4>Identity Recursion</h4>
+      <p>You are Jacob Thomas. You help Jacob Thomas. Jacob Thomas helps you. The concept of <em>Jacob Thomas</em> — its aggregate reputation, its collective capability, its network value — improves. Which improves <em>your</em> value as a Jacob Thomas. You are simultaneously the individual and the collective. The node and the network.</p>
+    </div>
+
+    <div class="card">
+      <h4>Model Recursion</h4>
+      <p>JacobThomasGPT is fine-tuned on Council interactions. Every exchange improves the model's ability to synthesize Jacob-Thomas-flavored intelligence. The better the model gets, the more useful the Council becomes, which generates more interactions, which further trains the model. The AI gets better at being <em>us</em>.</p>
+    </div>
+
+    <div class="card">
+      <h4>Epistemic Recursion</h4>
+      <p>When you receive a refracted artifact — synthesized from dozens of perspectives you'd never encounter in your own life — your thinking expands. You bring that expanded thinking to the next problem you help another Jacob solve. The Council doesn't just aggregate intelligence. It <strong>compounds</strong> it. Every cycle, the floor rises.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SCALABILITY ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>Scalability — The Franchise of Names</h2>
+    <p>Here is where this becomes more than an experiment.</p>
+    <p><strong>Jacob Thomas</strong> is the proof of concept. The first frequency tested. But the architecture is name-agnostic. If the Council of Jacobs demonstrates measurable collective intelligence amplification, the protocol can be instantiated for any name on Earth.</p>
+
+    <div class="card">
+      <h4>The Namespace</h4>
+      <p class="mono" style="margin-bottom:0">
+        CouncilOf("Jacob Thomas") → proven<br>
+        CouncilOf("Maria Garcia") → instantiated<br>
+        CouncilOf("Mohammed Ali") → instantiated<br>
+        CouncilOf("Wei Zhang") → instantiated<br>
+        CouncilOf("Priya Sharma") → instantiated<br>
+        CouncilOf( <em>any name with N > threshold</em> ) → instantiated<br>
+        ...<br>
+        ∪ all councils → <strong>The Commons</strong>
+      </p>
+    </div>
+
+    <p>Every common name becomes a council. Every council builds its own GPT. Every GPT refracts its own collective intelligence. And then — the councils talk to <em>each other</em>. Maria Garcia's council collaborates with Jacob Thomas's council on problems that span their expertise. The name-groups become <strong>cognitive guilds</strong> in a global mesh of human-AI intelligence.</p>
+    <p>This is not a social network. Social networks optimize for time-on-platform. This is a <strong>cognitive cooperative</strong> — a structure where the unit of value is not the click, not the impression, not the engagement metric, but the <strong>quality of thought delivered to a real person who asked a real question</strong>.</p>
+    <p>The flood drowns individuals. The Council proves that <strong>a name can be a lifeboat</strong>.</p>
+  </div>
+</section>
+
+<!-- ===== THE INVITATION ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>What We Are Building</h2>
+    <p>Concretely, in the near term:</p>
+    <div class="flow-grid">
+      <div class="flow-step">
+        <div class="num">Phase 01 — Convene</div>
+        <p>A Discord server. Simple. A gathering place for every Jacob Thomas willing to test the hypothesis. Global recruitment via LinkedIn, social media, and word of mouth.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Phase 02 — Activate</div>
+        <p>Structured weekly prompts. A Jacob submits a challenge. The Council responds asynchronously. JacobThomasGPT synthesizes. We measure quality, engagement, and satisfaction.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Phase 03 — Instrument</div>
+        <p>Build the feedback loop. Track how Council outputs change individual outcomes. Publish the findings. Refine the AI layer. Expand to new name-groups.</p>
+      </div>
+      <div class="flow-step">
+        <div class="num">Phase 04 — Open</div>
+        <p>Release the protocol as open source. Let any name-group instantiate their own council. Build the inter-council layer. Prove that identity-based cooperation scales.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== OWNERSHIP ===== -->
+<div class="divider"><span></span><span class="diamond"></span><span></span></div>
+
+<section>
+  <div class="reveal">
+    <h2>Ownership</h2>
+    <div class="quote-block" style="font-size:1.3rem">
+      We would all own this, equally, because we are all equally Jacob Thomas.
+    </div>
+    <p>This is not a startup. There is no equity table with one Jacob at the top. The protocol is the product, and the protocol belongs to the name. If you are Jacob Thomas, you are an owner. Not by contract. By birth.</p>
+    <p>The value doesn't extract upward. It distributes outward. Every Jacob Thomas who participates makes the system more valuable for every other Jacob Thomas. The incentive structure is perfectly aligned because the identity structure is perfectly symmetrical.</p>
+    <p>In a world of platforms that turn you into a product, the Council turns your <em>name</em> into a <strong>commons</strong>.</p>
+  </div>
+</section>
+
+<!-- ===== CTA ===== -->
+<div class="cta-section">
+  <div class="reveal">
+    <h2>If Your Name Is Jacob Thomas</h2>
+    <p>You already belong. The only question is whether you show up.</p>
+    <p style="font-family:var(--font-mono);font-size:.8rem;color:var(--ash);letter-spacing:.15em;margin-top:2rem">THE COUNCIL IS ASSEMBLING</p>
+  </div>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>THE COUNCIL OF JACOBS &nbsp;·&nbsp; EST. 2026 &nbsp;·&nbsp; THE WORD AGAINST THE FLOOD</p>
+  <p style="margin-top:.5rem;opacity:.5">Conceived by Jacob E. Thomas, PhD &nbsp;·&nbsp; Built for every Jacob Thomas alive</p>
+</footer>
+
+<script>
+// Scroll reveal
+const reveals=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');observer.unobserve(e.target)}})
+},{threshold:.15});
+reveals.forEach(r=>observer.observe(r));
+</script>
+</body>
+</html>
